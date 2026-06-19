@@ -1,168 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stack Petals</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stack Petals</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
 
-<link rel="stylesheet" href="./style.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
 
-<div class="cart" onclick="openCart()" title="View Cart" style="
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background-color: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 1000;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-"
-onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.2)'"
-onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
+<div id="app">
+
+  <!-- Background Canvases -->
+  <canvas id="circuit-canvas"></canvas>
+  <canvas id="petal-canvas"></canvas>
+
+  <!-- Floating Cart Button -->
+  <button class="cart-btn" @click="cartOpen = true" title="View Cart">
     <img src="./images/cart-icon.png" alt="Cart" width="28" height="28">
-</div>
+    <span class="cart-count" v-if="cartItems.length > 0">{{ cartItems.length }}</span>
+  </button>
 
-<canvas id="circuit-canvas"></canvas>
-<canvas id="petal-canvas"></canvas>
+  <!-- Cart Sidebar -->
+  <div class="cart-overlay" v-if="cartOpen" @click.self="cartOpen = false">
+    <div class="cart-panel">
+      <button class="close-btn" @click="cartOpen = false">✕</button>
+      <h2>Your Cart</h2>
 
-<div class="circuit-bg"></div>
+      <p class="cart-empty" v-if="cartItems.length === 0">Your cart is empty.</p>
 
-<header>
+      <div class="cart-item" v-for="(item, index) in cartItems" :key="index">
+        <img :src="item.image" :alt="item.name">
+        <div class="cart-item-info">
+          <div class="cart-item-name">{{ item.name }}</div>
+          <div class="cart-item-price">{{ item.price }}</div>
+        </div>
+        <button class="cart-item-remove" @click="removeFromCart(index)">✕</button>
+      </div>
+
+      <div class="cart-total" v-if="cartItems.length > 0">Total: {{ cartTotal }}</div>
+      <button class="checkout-btn" v-if="cartItems.length > 0">Checkout</button>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
     <div class="logo">
-        <img src="./images/logo.png" alt="Stack Petals">
+      <img src="./images/logo.png" alt="Stack Petals">
     </div>
-
     <nav>
-        <a href="#">Home</a>
-        <a href="#">Bouquets</a>
-        <a href="#">About</a>
-        <a href="#">Process</a>
-        <a href="#">Gallery</a>
-        <a href="#">Reviews</a>
-        <a href="#">Contact</a>
+      <a v-for="link in navLinks" :key="link" href="#">{{ link }}</a>
     </nav>
+  </header>
 
-    
-
-</header>
-
-<section class="hero">
-
+  <!-- Hero -->
+  <section class="hero">
     <div class="hero-left">
-
-        <h1>
-            Where Code <br>
-            Meets <span>Blooms</span>
-        </h1>
-
-        <p>
-            Engineered with Precision, Crafted with Love.
-        </p>
-
-        <div class="buttons">
-            <button class="primary">
-                Shop Bouquets
-            </button>
-
-            <button class="secondary">
-                Our Story
-            </button>
-        </div>
-
+      <h1>Where Code <br>Meets <span>Blooms</span></h1>
+      <p>Engineered with Precision, Crafted with Love.</p>
+      <div class="buttons">
+        <button class="primary" @click="scrollToProducts">Shop Bouquets</button>
+        <button class="secondary">Our Story</button>
+      </div>
     </div>
-
     <div class="hero-right">
-        <div class="circuit-animation">
-
-    <div class="line line1"></div>
-    <div class="line line2"></div>
-    <div class="line line3"></div>
-
-    <div class="node node1"></div>
-    <div class="node node2"></div>
-    <div class="node node3"></div>
-
+      <img src="./images/bouquet-main.png" alt="Bouquet">
     </div>
+  </section>
 
-        <img src="./images/bouquet-main.png" alt="Bouquet">
-
+  <!-- Feature Bar -->
+  <div class="feature-bar">
+    <div class="feature" v-for="feat in features" :key="feat.label">
+      <img :src="feat.icon" :alt="feat.label" width="40" height="40">
+      <div>
+        <strong>{{ feat.label }}</strong>
+        <span>{{ feat.sub }}</span>
+      </div>
     </div>
+  </div>
 
-</section>
-
-<div class="feature-bar">
-
-    <div class="feature">
-        <img src="./images/engineered-icon.png" alt="Engineered" width="40" height="40">
-        <div>
-            <strong>Engineered</strong>
-            <span>with Precision</span>
-        </div>
+  <!-- Products -->
+  <section class="products" id="products">
+    <h2>Featured Bouquets</h2>
+    <div class="grid">
+      <div class="card" v-for="product in products" :key="product.name">
+        <img :src="product.image" :alt="product.name" @click="openPreview(product)">
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.price }}</p>
+        <button class="add-to-cart-btn" @click="addToCart(product)">Add to Cart</button>
+      </div>
     </div>
+  </section>
 
-    <div class="feature">
-        <img src="./images/crafted-icon.png" alt="Crafted" width="40" height="40">
-        <div>
-            <strong>Crafted</strong>
-            <span>with Love</span>
-        </div>
+  <!-- Bouquet Preview Modal -->
+  <div class="preview-overlay" v-if="selectedBouquet" @click="selectedBouquet = null">
+    <button class="preview-close" @click.stop="selectedBouquet = null">✕</button>
+    <div class="preview-content" @click.stop>
+      <img :src="selectedBouquet.image" :alt="selectedBouquet.name">
+      <h2>{{ selectedBouquet.name }}</h2>
+      <p>{{ selectedBouquet.price }}</p>
     </div>
+  </div>
 
-    <div class="feature">
-        <img src="./images/delivered-icon.png" alt="Delivered" width="40" height="40">
-        <div>
-            <strong>Delivered</strong>
-            <span>with Care</span>
-        </div>
-    </div>
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 Stack Petals. Where Code Meets Blooms.</p>
+  </footer>
 
 </div>
 
-<section class="products">
-
-    <h2>Featured Bouquets</h2>
-
-    <div class="grid">
-
-        <div class="card">
-            <img src="./images/b1.jpg" alt="Blush Symphony">
-            <h3>Blush Symphony</h3>
-            <p>$85.00</p>
-        </div>
-
-        <div class="card">
-            <img src="./images/b2.jpg" alt="Code & Petals">
-            <h3>Code & Petals</h3>
-            <p>$95.00</p>
-        </div>
-
-        <div class="card">
-            <img src="./images/b3.jpg" alt="Circuit of Love">
-            <h3>Circuit of Love</h3>
-            <p>$75.00</p>
-        </div>
-
-        <div class="card">
-            <img src="./images/b4.jpg" alt="Binary Bloom">
-            <h3>Binary Bloom</h3>
-            <p>$90.00</p>
-        </div>
-
-    </div>
-
-</section>
-
-<script src="./script.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>
