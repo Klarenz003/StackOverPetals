@@ -51,9 +51,78 @@ createApp({
       this.selectedBouquet = product;
     },
 
-    addToCart(product) {
+    addToCart(product, event) {
+      this.flyToCart(event);
       this.cartItems.push({ ...product });
-      this.cartOpen = true;
+    },
+
+    flyToCart(event) {
+      const btn = event.currentTarget;
+      const cartBtn = document.querySelector('.cart-btn');
+      if (!btn || !cartBtn) return;
+
+      const srcRect  = btn.getBoundingClientRect();
+      const destRect = cartBtn.getBoundingClientRect();
+
+      const petal = document.createElement('div');
+      petal.className = 'fly-petal';
+
+      const startX = srcRect.left + srcRect.width  / 2;
+      const startY = srcRect.top  + srcRect.height / 2;
+
+      petal.style.cssText = `
+        position: fixed;
+        left: ${startX}px;
+        top: ${startY}px;
+        width: 22px;
+        height: 36px;
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        background: rgba(216, 165, 167, 0.9);
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%) rotate(0deg);
+        transition: none;
+        box-shadow: 0 2px 8px rgba(216,165,167,0.4);
+      `;
+
+      document.body.appendChild(petal);
+
+      const endX = destRect.left + destRect.width  / 2;
+      const endY = destRect.top  + destRect.height / 2;
+
+      const dx = endX - startX;
+      const dy = endY - startY;
+
+      const duration = 650;
+      const start = performance.now();
+
+      const animate = (now) => {
+        const elapsed  = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease     = 1 - Math.pow(1 - progress, 3);
+
+        const x   = startX + dx * ease;
+        const arc = -Math.sin(progress * Math.PI) * 120;
+        const y   = startY + dy * ease + arc;
+        const rot = progress * 360;
+        const scale = 1 - progress * 0.5;
+        const alpha = progress > 0.8 ? 1 - (progress - 0.8) / 0.2 : 1;
+
+        petal.style.left    = `${x}px`;
+        petal.style.top     = `${y}px`;
+        petal.style.opacity = alpha;
+        petal.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(${scale})`;
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          petal.remove();
+          cartBtn.classList.add('cart-bounce');
+          cartBtn.addEventListener('animationend', () => cartBtn.classList.remove('cart-bounce'), { once: true });
+        }
+      };
+
+      requestAnimationFrame(animate);
     },
 
     removeFromCart(index) {
