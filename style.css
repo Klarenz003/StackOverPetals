@@ -317,6 +317,18 @@ nav a:hover {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
+.cart-btn.cart-bounce {
+  animation: cartBounce 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes cartBounce {
+  0%   { transform: scale(1); }
+  25%  { transform: scale(1.3) rotate(-8deg); }
+  50%  { transform: scale(1.2) rotate(6deg); }
+  75%  { transform: scale(1.1) rotate(-3deg); }
+  100% { transform: scale(1); }
+}
+
 .cart-count {
   position: absolute;
   top: -2px;
