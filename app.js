@@ -58,10 +58,10 @@ const HomePage = {
         { label: 'Delivered',  sub: 'with Care',      icon: './images/delivered-icon.png'  },
       ],
       products: [
-        { name: 'Blush Symphony',  price: '$85.00', image: './images/b1.png' },
-        { name: 'Code & Petals',   price: '$95.00', image: './images/b2.png' },
-        { name: 'Pink Algorithm',  price: '$75.00', image: './images/b3.png' },
-        { name: 'Lavender Logic',  price: '$90.00', image: './images/b4.png' },
+        { name: 'Blush Symphony',  price: '₱5,000.00', image: './images/b1.png' },
+        { name: 'Code & Petals',   price: '₱5,699.00', image: './images/b2.png' },
+        { name: 'Pink Algorithm',  price: '₱4,500.00', image: './images/b3.png' },
+        { name: 'Lavender Logic',  price: '₱5,399.00', image: './images/b4.png' },
       ],
     };
   },
@@ -104,14 +104,14 @@ const BouquetsPage = {
       activeFilter: 'All',
       filters: ['All', 'Romance', 'Birthday', 'Sympathy', 'Celebration'],
       products: [
-        { name: 'Blush Symphony',    price: '$85.00',  image: './images/b1.png', category: 'Romance',     badge: 'Best Seller' },
-        { name: 'Code & Petals',     price: '$95.00',  image: './images/b2.png', category: 'Celebration', badge: null },
-        { name: 'Pink Algorithm',    price: '$75.00',  image: './images/b3.png', category: 'Birthday',    badge: null },
-        { name: 'Lavender Logic',    price: '$90.00',  image: './images/b4.png', category: 'Romance',     badge: null },
-        { name: 'Soft Compile',      price: '$80.00',  image: './images/b1.png', category: 'Sympathy',    badge: null },
-        { name: 'Binary Blossom',    price: '$110.00', image: './images/b2.png', category: 'Celebration', badge: 'New' },
-        { name: 'Debug in Bloom',    price: '$70.00',  image: './images/b3.png', category: 'Birthday',    badge: null },
-        { name: 'Null Pointer Rose', price: '$65.00',  image: './images/b4.png', category: 'Sympathy',    badge: null },
+        { name: 'Blush Symphony',    price: '₱5,000.00',  image: './images/b1.png', category: 'Romance',     badge: 'Best Seller' },
+        { name: 'Code & Petals',     price: '₱5,699.00',  image: './images/b2.png', category: 'Celebration', badge: null },
+        { name: 'Pink Algorithm',    price: '₱4,500.00',  image: './images/b3.png', category: 'Birthday',    badge: null },
+        { name: 'Lavender Logic',    price: '₱5,399.00',  image: './images/b4.png', category: 'Romance',     badge: null },
+        { name: 'Soft Compile',      price: '₱5,000.00',  image: './images/b1.png', category: 'Sympathy',    badge: null },
+        { name: 'Binary Blossom',    price: '₱6,599.00', image: './images/b2.png', category: 'Celebration', badge: 'New' },
+        { name: 'Debug in Bloom',    price: '₱4,200.00',  image: './images/b3.png', category: 'Birthday',    badge: null },
+        { name: 'Null Pointer Rose', price: '₱3,899.00',  image: './images/b4.png', category: 'Sympathy',    badge: null },
       ],
     };
   },
@@ -170,15 +170,15 @@ const AboutPage = {
     return {
       values: [
         { icon: '🌸', title: 'Precision',   desc: 'Every stem placed with purpose, like a function with a clear return value.' },
-        { icon: '💚', title: 'Freshness',   desc: 'Only the finest seasonal blooms, sourced locally whenever possible.' },
+        { icon: '✨', title: 'Lasting Beauty',   desc: 'Handcrafted bouquets designed to stay beautiful for years, not days.' },
         { icon: '📦', title: 'Reliability', desc: 'On-time delivery, every time. No bugs, no delays.' },
         { icon: '💛', title: 'Heart',       desc: 'Each bouquet carries the warmth of genuine human craftsmanship.' },
       ],
       team: [
-        { name: 'Alex Rivera',   role: 'Founder & Lead Designer',  initials: 'AR' },
-        { name: 'Sam Lim',       role: 'Head Florist',             initials: 'SL' },
-        { name: 'Jamie Cruz',    role: 'Delivery & Logistics',     initials: 'JC' },
-        { name: 'Morgan Reyes',  role: 'Customer Experience',      initials: 'MR' },
+        { name: 'Klarenz E.',   role: 'Owner',  initials: 'KE' },
+        { name: 'Klarenz E.',       role: 'Web Developer/Designer',             initials: 'KE' },
+        { name: 'Klarenz E.',    role: 'Florist',     initials: 'KE' },
+        { name: 'Klarenz E.',  role: 'Software Engineer',      initials: 'KE' },
       ],
     };
   },
@@ -209,8 +209,8 @@ const ProcessPage = {
       steps: [
         { title: 'You Place Your Order',      desc: 'Browse our catalog, add to cart, and check out with GCash or Maya.' },
         { title: 'We Review Your Payment',    desc: 'Our team verifies your payment screenshot within a few hours.' },
-        { title: 'Sourcing the Blooms',       desc: 'We hand-pick the freshest flowers from our trusted local suppliers.' },
-        { title: 'Crafting Your Bouquet',     desc: 'Our florists arrange every stem with care and your preferences in mind.' },
+        { title: 'Crafting the Blooms',       desc: 'Each flower is carefully handcrafted to create a beautiful and lasting bouquet.' },
+        { title: 'Arranging Your Bouquet',     desc: 'Our florists arrange every stem with care and your preferences in mind.' },
         { title: 'Careful Packaging',         desc: 'Wrapped and secured so your blooms arrive as beautiful as they left.' },
         { title: 'Delivered to Your Door',    desc: 'On-time delivery to your specified address on your chosen date.' },
       ],
@@ -257,8 +257,8 @@ const ReviewsPage = {
   data() {
     return {
       reviews: [
-        { name: 'Balili R.',   text: 'Absolutely stunning bouquet! The flowers were so fresh and the delivery was right on time. Will definitely order again.' },
-        { name: 'Ledda B.',   text: 'Ordered for my girlfriend\'s birthday. She cried happy tears. Stack Petals never disappoints.' },
+        { name: 'Maria S.',   text: 'Absolutely stunning bouquet! The flowers were so fresh and the delivery was right on time. Will definitely order again.' },
+        { name: 'Carlo B.',   text: 'Ordered for my girlfriend\'s birthday. She cried happy tears. Stack Petals never disappoints.' },
         { name: 'Jessa R.',   text: 'The GCash payment was so easy and the team confirmed my order super fast. Love the whole experience!' },
         { name: 'Miguel T.',  text: 'Unique concept — flowers + tech vibes. The packaging was gorgeous and everything arrived perfect.' },
         { name: 'Ana G.',     text: 'I\'ve ordered three times already. Every bouquet is more beautiful than the last.' },
@@ -333,9 +333,9 @@ const ContactPage = {
       submitted: false,
       form: { name: '', email: '', subject: '', message: '' },
       info: [
-        { icon: '📍', label: 'Address',       value: 'Taytay, Rizal, Philippines' },
-        { icon: '📧', label: 'Email',          value: 'klarenz5412@gmail.com' },
-        { icon: '📱', label: 'Phone',  value: '+63 962 270 3704' },
+        { icon: '📍', label: 'Address',       value: 'Quezon City, Metro Manila, Philippines' },
+        { icon: '📧', label: 'Email',          value: 'hello@stackpetals.com' },
+        { icon: '📱', label: 'Phone / Viber',  value: '+63 9XX XXX XXXX' },
         { icon: '🕐', label: 'Business Hours', value: 'Mon–Sat, 8:00 AM – 7:00 PM' },
       ],
     };
@@ -348,6 +348,20 @@ const ContactPage = {
   methods: {
     sendMessage() {
       if (!this.formValid) return;
+
+      /* ── Persist message to localStorage (shared with admin) ── */
+      const msgs = JSON.parse(localStorage.getItem('sp_messages') || '[]');
+      msgs.unshift({
+        id:        'MSG-' + Date.now(),
+        createdAt: new Date().toISOString(),
+        name:      this.form.name,
+        email:     this.form.email,
+        subject:   this.form.subject,
+        message:   this.form.message,
+        read:      false,
+      });
+      localStorage.setItem('sp_messages', JSON.stringify(msgs));
+
       this.submitted = true;
       this.form = { name: '', email: '', subject: '', message: '' };
     },
@@ -517,7 +531,27 @@ createApp({
     submitOrder() {
       if (!this.paymentProof) return;
       this.confirmedTotal = this.cartTotal;
-      this.checkoutStep   = 4;
+
+      /* ── Persist order to localStorage (shared with admin) ── */
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const orders = JSON.parse(localStorage.getItem('sp_orders') || '[]');
+        orders.unshift({
+          id:            'ORD-' + Date.now(),
+          createdAt:     new Date().toISOString(),
+          customer:      { ...this.customer },
+          items:         this.cartItems.map(i => ({ name: i.name, price: i.price, image: i.image })),
+          total:         this.cartTotal,
+          paymentMethod: this.paymentMethod === 'gcash' ? 'GCash' : 'Maya',
+          proofImage:    e.target.result,
+          paymentStatus: 'Pending',
+          deliveryStatus:'Processing',
+        });
+        localStorage.setItem('sp_orders', JSON.stringify(orders));
+      };
+      reader.readAsDataURL(this.paymentProof);
+
+      this.checkoutStep = 4;
     },
 
     finishCheckout() {
