@@ -10,12 +10,13 @@
   <link rel="stylesheet" href="./style.css">
 
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.js"></script>
 </head>
 <body>
 
 <div id="app">
 
-  <!-- Background Canvases -->
+  <!-- Background Canvases (always visible) -->
   <canvas id="circuit-canvas"></canvas>
   <canvas id="petal-canvas"></canvas>
 
@@ -25,7 +26,7 @@
     <span class="cart-count" v-if="cartItems.length > 0">{{ cartItems.length }}</span>
   </button>
 
-  <!-- Cart Sidebar -->
+  <!-- ── Cart Sidebar ── -->
   <div class="cart-overlay" v-if="cartOpen" @click.self="cartOpen = false">
     <div class="cart-panel">
       <button class="close-btn" @click="cartOpen = false">✕</button>
@@ -43,70 +44,190 @@
       </div>
 
       <div class="cart-total" v-if="cartItems.length > 0">Total: {{ cartTotal }}</div>
-      <button class="checkout-btn" v-if="cartItems.length > 0">Checkout</button>
+      <button class="checkout-btn" v-if="cartItems.length > 0" @click="openCheckout">Checkout</button>
     </div>
   </div>
 
-  <!-- Header -->
+  <!-- ── Checkout Modal ── -->
+  <div class="checkout-overlay" v-if="checkoutStep > 0" @click.self="closeCheckout">
+    <div class="checkout-modal">
+
+      <!-- Step indicator -->
+      <div class="checkout-steps">
+        <div class="step" :class="{ active: checkoutStep >= 1, done: checkoutStep > 1 }">
+          <span>1</span><small>Order</small>
+        </div>
+        <div class="step-line" :class="{ done: checkoutStep > 1 }"></div>
+        <div class="step" :class="{ active: checkoutStep >= 2, done: checkoutStep > 2 }">
+          <span>2</span><small>Details</small>
+        </div>
+        <div class="step-line" :class="{ done: checkoutStep > 2 }"></div>
+        <div class="step" :class="{ active: checkoutStep >= 3, done: checkoutStep > 3 }">
+          <span>3</span><small>Payment</small>
+        </div>
+        <div class="step-line" :class="{ done: checkoutStep > 3 }"></div>
+        <div class="step" :class="{ active: checkoutStep >= 4 }">
+          <span>✓</span><small>Done</small>
+        </div>
+      </div>
+
+      <!-- STEP 1 — Order Summary -->
+      <div v-if="checkoutStep === 1" class="checkout-body">
+        <h2>Order Summary</h2>
+        <div class="co-item" v-for="item in cartItems" :key="item.name">
+          <img :src="item.image" :alt="item.name">
+          <div class="co-item-info">
+            <span class="co-item-name">{{ item.name }}</span>
+            <span class="co-item-price">{{ item.price }}</span>
+          </div>
+        </div>
+        <div class="co-total">Total: <strong>{{ cartTotal }}</strong></div>
+        <div class="co-actions">
+          <button class="co-btn-outline" @click="closeCheckout">Cancel</button>
+          <button class="co-btn-primary" @click="checkoutStep = 2">Continue →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2 — Customer Details -->
+      <div v-if="checkoutStep === 2" class="checkout-body">
+        <h2>Your Details</h2>
+        <div class="co-form">
+          <label>Full Name
+            <input v-model="customer.name" type="text" placeholder="Juan dela Cruz">
+          </label>
+          <label>Email Address
+            <input v-model="customer.email" type="email" placeholder="juan@email.com">
+          </label>
+          <label>Phone Number
+            <input v-model="customer.phone" type="tel" placeholder="+63 9XX XXX XXXX">
+          </label>
+          <label>Delivery Address
+            <textarea v-model="customer.address" placeholder="House no., Street, Barangay, City" rows="3"></textarea>
+          </label>
+          <label>Delivery Date
+            <input v-model="customer.date" type="date">
+          </label>
+          <label>Note (optional)
+            <textarea v-model="customer.note" placeholder="Any special requests?" rows="2"></textarea>
+          </label>
+        </div>
+        <div class="co-actions">
+          <button class="co-btn-outline" @click="checkoutStep = 1">← Back</button>
+          <button class="co-btn-primary" @click="goToPayment" :disabled="!customerValid">Continue →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 — Payment -->
+      <div v-if="checkoutStep === 3" class="checkout-body">
+        <h2>Payment</h2>
+        <p class="co-subtitle">Total to pay: <strong>{{ cartTotal }}</strong></p>
+
+        <!-- Payment method toggle -->
+        <div class="payment-toggle">
+          <button
+            :class="['pay-tab', { active: paymentMethod === 'gcash' }]"
+            @click="paymentMethod = 'gcash'">
+            💙 GCash
+          </button>
+          <button
+            :class="['pay-tab', { active: paymentMethod === 'maya' }]"
+            @click="paymentMethod = 'maya'">
+            💚 Maya
+          </button>
+        </div>
+
+        <!-- QR Code placeholder -->
+        <div class="qr-container">
+          <div class="qr-box" v-if="paymentMethod === 'gcash'">
+            <img src="./images/gcash-qr.jpg" alt="GCash QR" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+            <div class="qr-placeholder" style="display:none">
+              <span>💙</span>
+              <p>GCash QR Code</p>
+              <small>Replace with your actual GCash QR<br>(./images/gcash-qr.png)</small>
+            </div>
+          </div>
+          <div class="qr-box" v-if="paymentMethod === 'maya'">
+            <img src="./images/maya-qr.jpg" alt="Maya QR" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+            <div class="qr-placeholder" style="display:none">
+              <span>💚</span>
+              <p>Maya QR Code</p>
+              <small>Replace with your actual Maya QR<br>(./images/maya-qr.png)</small>
+            </div>
+          </div>
+          <p class="qr-hint">Scan the QR code using your {{ paymentMethod === 'gcash' ? 'GCash' : 'Maya' }} app, then upload your screenshot below.</p>
+        </div>
+
+        <!-- Upload proof -->
+        <div class="upload-area" @click="$refs.proofInput.click()" @dragover.prevent @drop.prevent="handleDrop">
+          <input ref="proofInput" type="file" accept="image/*" @change="handleProofUpload" style="display:none">
+          <div v-if="!paymentProof" class="upload-placeholder">
+            <span>📎</span>
+            <p>Click or drag your payment screenshot here</p>
+          </div>
+          <div v-else class="upload-preview">
+            <img :src="paymentProofPreview" alt="Payment proof">
+            <button class="remove-proof" @click.stop="paymentProof = null; paymentProofPreview = null">✕</button>
+          </div>
+        </div>
+
+        <div class="co-actions">
+          <button class="co-btn-outline" @click="checkoutStep = 2">← Back</button>
+          <button class="co-btn-primary" @click="submitOrder" :disabled="!paymentProof">Submit Order →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4 — Confirmation -->
+      <div v-if="checkoutStep === 4" class="checkout-body confirmation">
+        <div class="confirm-icon">🌸</div>
+        <h2>Order Received!</h2>
+        <p>Thank you, <strong>{{ customer.name }}</strong>! Your order has been submitted successfully.</p>
+        <div class="confirm-details">
+          <div><span>Order Total</span><strong>{{ confirmedTotal }}</strong></div>
+          <div><span>Payment via</span><strong>{{ paymentMethod === 'gcash' ? 'GCash' : 'Maya' }}</strong></div>
+          <div><span>Delivery to</span><strong>{{ customer.address }}</strong></div>
+          <div><span>Delivery Date</span><strong>{{ customer.date }}</strong></div>
+          <div><span>Confirmation sent to</span><strong>{{ customer.email }}</strong></div>
+        </div>
+        <p class="confirm-note">We'll review your payment and confirm your order within 24 hours. 🌷</p>
+        <button class="co-btn-primary" @click="finishCheckout">Done</button>
+      </div>
+
+      <!-- Close button -->
+      <button class="checkout-close" @click="closeCheckout" v-if="checkoutStep < 4">✕</button>
+    </div>
+  </div>
+
+  <!-- ── Header ── -->
   <header>
-    <div class="logo">
+    <div class="logo" @click="navigate('/')">
       <img src="./images/logo.png" alt="Stack Petals">
     </div>
     <nav>
-      <a v-for="link in navLinks" :key="link" href="#">{{ link }}</a>
+      <router-link to="/">Home</router-link>
+      <router-link to="/bouquets">Bouquets</router-link>
+      <router-link to="/about">About</router-link>
+      <router-link to="/process">Process</router-link>
+      <router-link to="/gallery">Gallery</router-link>
+      <router-link to="/reviews">Reviews</router-link>
+      <router-link to="/contact">Contact</router-link>
     </nav>
   </header>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-left">
-      <h1>Where Code <br>Meets <span>Blooms</span></h1>
-      <p>Engineered with Precision, Crafted with Love.</p>
-      <div class="buttons">
-        <button class="primary" @click="scrollToProducts">Shop Bouquets</button>
-        <button class="secondary">Our Story</button>
-      </div>
-    </div>
-    <div class="hero-right">
-      <img src="./images/bouquet-main.png" alt="Bouquet">
-    </div>
-  </section>
+  <!-- ── Router View ── -->
+  <router-view></router-view>
 
-  <!-- Feature Bar -->
-  <div class="feature-bar">
-    <div class="feature" v-for="feat in features" :key="feat.label">
-      <img :src="feat.icon" :alt="feat.label" width="40" height="40">
-      <div>
-        <strong>{{ feat.label }}</strong>
-        <span>{{ feat.sub }}</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Products -->
-  <section class="products" id="products">
-    <h2>Featured Bouquets</h2>
-    <div class="grid">
-      <div class="card" v-for="product in products" :key="product.name">
-        <img :src="product.image" :alt="product.name" @click="openPreview(product)">
-        <h3>{{ product.name }}</h3>
-        <p>{{ product.price }}</p>
-        <button class="add-to-cart-btn" @click="addToCart(product)">Add to Cart</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Bouquet Preview Modal -->
+  <!-- ── Bouquet Preview Modal ── -->
   <div class="preview-overlay" v-if="selectedBouquet" @click="selectedBouquet = null">
     <button class="preview-close" @click.stop="selectedBouquet = null">✕</button>
     <div class="preview-content" @click.stop>
       <img :src="selectedBouquet.image" :alt="selectedBouquet.name">
       <h2>{{ selectedBouquet.name }}</h2>
       <p>{{ selectedBouquet.price }}</p>
+      <button class="co-btn-primary" style="margin-top:16px" @click="addToCart(selectedBouquet, $event); selectedBouquet = null">Add to Cart</button>
     </div>
   </div>
 
-  <!-- Footer -->
+  <!-- ── Footer ── -->
   <footer>
     <p>© 2026 Stack Petals. Where Code Meets Blooms.</p>
   </footer>
