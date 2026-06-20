@@ -419,10 +419,11 @@ createApp({
   /* ---------- Computed ---------- */
   computed: {
     cartTotal() {
-      const sum = this.cartItems.reduce(
-        (acc, item) => acc + parseFloat(item.price.replace('$', '')), 0
-      );
-      return `$${sum.toFixed(2)}`;
+      const sum = this.cartItems.reduce((acc, item) => {
+        const numeric = parseFloat(item.price.replace(/[₱,]/g, ''));
+        return acc + (isNaN(numeric) ? 0 : numeric);
+      }, 0);
+      return `₱${sum.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     },
     customerValid() {
       const c = this.customer;
